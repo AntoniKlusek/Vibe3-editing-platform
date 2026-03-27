@@ -69,4 +69,3 @@ pnpm dev
 - `/packages/ui`: Shared UI components.
 
 ---
-Built with ⚡ by an Advanced Agentic Coding System.
