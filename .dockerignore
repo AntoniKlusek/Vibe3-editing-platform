@@ -1,0 +1,16 @@
+node_modules
+.next
+dist
+out
+.turbo
+.env
+.env.*
+!.env.example
+*.log
+docker-compose.yml
+Dockerfile
+infra/k8s
+.git
+.vscode
+.idea
+.pnpm-debug.log

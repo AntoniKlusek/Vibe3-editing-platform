@@ -1,0 +1,237 @@
+{
+  "id": "09f45c51-d6a4-41fc-99a8-8114567106ad",
+  "prevId": "15c4bbbf-b74d-47fa-84cc-3c7d1772f844",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.videos": {
+      "name": "videos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "video_type": {
+          "name": "video_type",
+          "type": "video_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'SOURCE'"
+        },
+        "status": {
+          "name": "status",
+          "type": "video_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_video_id": {
+          "name": "source_video_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trim_start": {
+          "name": "trim_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trim_end": {
+          "name": "trim_end",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "playback_speed": {
+          "name": "playback_speed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'1.0'"
+        },
+        "raw_key": {
+          "name": "raw_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hls_base_key": {
+          "name": "hls_base_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "manifest_url": {
+          "name": "manifest_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thumbnail_url": {
+          "name": "thumbnail_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration_sec": {
+          "name": "duration_sec",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width_px": {
+          "name": "width_px",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "height_px": {
+          "name": "height_px",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.projects": {
+      "name": "projects",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.video_status": {
+      "name": "video_status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "PROCESSING",
+        "READY",
+        "FAILED"
+      ]
+    },
+    "public.video_type": {
+      "name": "video_type",
+      "schema": "public",
+      "values": [
+        "SOURCE",
+        "CLIP"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

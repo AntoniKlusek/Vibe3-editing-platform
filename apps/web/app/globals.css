@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #050505;
+  --color-surface: #131313;
+  --color-surface-bright: #2a2a2a;
+  --color-surface-dim: #0e0e0e;
+  
+  --color-primary: #0047ab;
+  --color-primary-hover: #0087ff;
+  
+  --color-on-background: #e5e2e1;
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-muted: rgba(229, 226, 225, 0.5);
+
+  --font-headline: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.5rem;
+  
+  --animate-scale-in: scale-in 0.2s ease-out;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .video-gradient-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.98); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Custom Utilities */
+.video-gradient-overlay {
+  background: linear-gradient(to top, rgba(14,14,14,0.9) 0%, rgba(14,14,14,0) 40%);
+}
+
+.glass-controls {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}

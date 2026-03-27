@@ -1,0 +1,56 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env.example"],
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "R2_ACCOUNT_ID",
+        "R2_ACCESS_KEY_ID",
+        "R2_SECRET_ACCESS_KEY",
+        "R2_BUCKET_NAME",
+        "R2_PUBLIC_URL",
+        "REDIS_URL",
+        "WORKER_SECRET"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false,
+      "outputs": ["src/generated/**"]
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

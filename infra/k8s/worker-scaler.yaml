@@ -1,0 +1,17 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: transcoding-worker-scaler
+spec:
+  scaleTargetRef:
+    name: transcoding-worker
+  pollingInterval: 15    # Check queue depth every 15 seconds
+  cooldownPeriod: 60     # Wait 60s before scaling down after queue empties
+  minReplicaCount: 1     # Always keep at least 1 worker running
+  maxReplicaCount: 20    # Cap at 20 workers
+  triggers:
+    - type: redis
+      metadata:
+        address: redis-service:6379   # Redis service DNS within K8s cluster
+        listName: bull:transcoding:wait
+        listLength: "5"               # Scale up when >5 jobs waiting

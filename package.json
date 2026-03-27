@@ -1,0 +1,38 @@
+{
+  "name": "Vibe3",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vibe3 Video Streaming Platform — Monorepo",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@vibe3/web",
+    "dev:worker": "turbo run dev --filter=@vibe3/worker",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:generate": "turbo run db:generate --filter=@vibe3/db",
+    "db:migrate": "turbo run db:migrate --filter=@vibe3/db",
+    "db:studio": "turbo run db:studio --filter=@vibe3/db",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f worker",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3",
+    "@types/node": "^22.10.7"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

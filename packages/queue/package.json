@@ -1,0 +1,24 @@
+{
+  "name": "@vibe3/queue",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "BullMQ queue definitions and job type contracts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "bullmq": "^5.34.8",
+    "ioredis": "5.5.0"
+  },
+  "devDependencies": {
+    "@vibe3/config": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}

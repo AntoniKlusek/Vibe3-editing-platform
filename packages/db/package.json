@@ -1,0 +1,27 @@
+{
+  "name": "@vibe3/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared database schema, client and migrations (Drizzle ORM)",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./schema/*": "./src/schema/*.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.39.3",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@vibe3/config": "workspace:*",
+    "drizzle-kit": "^0.30.4",
+    "typescript": "^5.7.3"
+  }
+}

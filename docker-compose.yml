@@ -1,0 +1,178 @@
+version: "3.9"
+
+# =============================================================================
+# Vibe3 — Local Development Stack
+# Usage:
+#   docker compose up -d          → Start all services
+#   docker compose up -d postgres redis  → Start only infra (run Next.js locally)
+#   docker compose logs -f worker  → Follow worker logs
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — local database (mirrors Supabase schema)
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: supabase/postgres:15.8.1.060
+    container_name: Vibe3_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdevpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-Vibe3}
+      POSTGRES_USER: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - Vibe3_net
+
+  # ---------------------------------------------------------------------------
+  # Redis — BullMQ job queue + cache
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7.2-alpine
+    container_name: Vibe3_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - Vibe3_net
+
+  # ---------------------------------------------------------------------------
+  # Video Processing Worker — Node.js + FFmpeg
+  # ---------------------------------------------------------------------------
+  worker:
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    container_name: Vibe3_worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-localdevpassword}@postgres:5432/${POSTGRES_DB:-Vibe3}
+      SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL}
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-2}
+      WORKER_TMP_DIR: /tmp/Vibe3
+      WORKER_SECRET: ${WORKER_SECRET}
+    volumes:
+      - worker_tmp:/tmp/Vibe3 # Shared temp dir for FFmpeg output
+    networks:
+      - Vibe3_net
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+
+  # ---------------------------------------------------------------------------
+  # BullMQ Board — Queue monitoring dashboard (dev only)
+  # Access at: http://localhost:3002
+  # ---------------------------------------------------------------------------
+  bullboard:
+    image: deadly0/bull-board:latest
+    container_name: Vibe3_bullboard
+    restart: unless-stopped
+    depends_on:
+      - redis
+    ports:
+      - "3002:3000"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_USE_TLS: "false"
+      BULL_PREFIX: bull
+    networks:
+      - Vibe3_net
+
+  # ---------------------------------------------------------------------------
+  # MinIO — Local S3/R2-compatible object storage (for offline dev)
+  # Access console at: http://localhost:9001 (admin / password123)
+  # S3 API at: http://localhost:9000
+  # ---------------------------------------------------------------------------
+  minio:
+    image: minio/minio:latest
+    container_name: Vibe3_minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web console
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - Vibe3_net
+
+  # ---------------------------------------------------------------------------
+  # MinIO bucket init — creates the default bucket on first run
+  # ---------------------------------------------------------------------------
+  minio_init:
+    image: minio/mc:latest
+    container_name: Vibe3_minio_init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://minio:9000 admin password123;
+        mc mb --ignore-existing local/Vibe3-videos;
+        mc anonymous set public local/Vibe3-videos;
+        echo 'MinIO bucket initialized (public).';
+        exit 0;
+      "
+    networks:
+      - Vibe3_net
+
+# =============================================================================
+# Volumes & Networks
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  worker_tmp:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  Vibe3_net:
+    driver: bridge
